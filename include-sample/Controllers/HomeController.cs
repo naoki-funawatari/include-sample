@@ -1,8 +1,10 @@
 ﻿using include_sample.Models;
+using include_sample.Views.Home;
 using JuniorTennis.Infrastructure.DataBase;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Diagnostics;
 using System.Linq;
 using System.Threading.Tasks;
@@ -27,9 +29,20 @@ namespace include_sample.Controllers
             return View();
         }
 
-        public IActionResult Privacy()
+        public async Task<IActionResult> Privacy()
         {
-            return View();
+            var model = new PrivacyViewModel();
+            model.StartDateTime = DateTime.Now;
+
+            _context.Database.SetCommandTimeout(120);
+            await _context.FirstLayers
+                .Include(o => o.SecondLayers)
+                .ThenInclude(o => o.ThirdLayers)
+                .ThenInclude(o => o.FourthLayers)
+                .ToListAsync();
+
+            model.EndDateTime = DateTime.Now;
+            return View(model);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
