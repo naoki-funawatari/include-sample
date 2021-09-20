@@ -4,6 +4,8 @@ namespace include_sample.Models
 {
     public class SecondLayer : LayerBase
     {
-        public List<LayerBase> Values { get; set; }
+        public int FirstLayerId { get; set; }
+        public FirstLayer FirstLayer { get; set; }
+        public List<ThirdLayer> ThirdLayers { get; set; }
     }
 }
