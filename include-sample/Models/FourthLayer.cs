@@ -1,9 +1,8 @@
-﻿using System.Collections.Generic;
-
-namespace include_sample.Models
+﻿namespace include_sample.Models
 {
     public class FourthLayer : LayerBase
     {
-        public List<LayerBase> Values { get; set; }
+        public int ThirdLayerId { get; set; }
+        public ThirdLayer ThirdLayer { get; set; }
     }
 }
