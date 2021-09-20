@@ -1,12 +1,16 @@
 ﻿@using include_sample.Views.Home;
-@model PrivacyViewModel;
+@model Measure1ViewModel;
 @{
-    ViewData["Title"] = "Privacy Policy";
+    ViewData["Title"] = "計測①";
 }
 <h1>@ViewData["Title"]</h1>
 
 <p>@Model.StartDateTime</p>
 <p>@Model.EndDateTime</p>
 <p>@Model.DurationTime</p>
+<p>@Model.SecondLayerACount</p>
+<p>@Model.ThirdLayerACount</p>
+<p>@Model.SecondLayerBCount</p>
+<p>@Model.ThirdLayerBCount</p>
 
 <p>Use this page to detail your site's privacy policy.</p>

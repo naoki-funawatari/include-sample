@@ -8,34 +8,42 @@ namespace JuniorTennis.Infrastructure.DataBase
         public SampleDbContext(DbContextOptions<SampleDbContext> options) : base(options) { }
 
         public DbSet<FirstLayer> FirstLayers { get; set; }
-        public DbSet<SecondLayer> SecondLayers { get; set; }
-        public DbSet<ThirdLayer> ThirdLayers { get; set; }
-        public DbSet<FourthLayer> FourthLayers { get; set; }
+        public DbSet<SecondLayerA> SecondLayersA { get; set; }
+        public DbSet<SecondLayerB> SecondLayersB { get; set; }
+        public DbSet<ThirdLayerA> ThirdLayersA { get; set; }
+        public DbSet<ThirdLayerB> ThirdLayersB { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             modelBuilder.Entity<FirstLayer>()
                 .ToTable("first_layers");
 
-            modelBuilder.Entity<SecondLayer>()
-                .ToTable("second_layers")
+            modelBuilder.Entity<SecondLayerA>()
+                .ToTable("second_layers_a")
                 .HasOne(p => p.FirstLayer)
-                .WithMany(b => b.SecondLayers)
+                .WithMany(b => b.SecondLayersA)
                 .HasForeignKey(s => s.FirstLayerId)
                 .HasPrincipalKey(c => c.Id);
 
-            modelBuilder.Entity<ThirdLayer>()
-                .ToTable("third_layers")
-                .HasOne(p => p.SecondLayer)
+            modelBuilder.Entity<ThirdLayerA>()
+                .ToTable("third_layers_a")
+                .HasOne(p => p.SecondLayerA)
                 .WithMany(b => b.ThirdLayers)
-                .HasForeignKey(s => s.SecondLayerId)
+                .HasForeignKey(s => s.SecondLayerAId)
                 .HasPrincipalKey(c => c.Id);
 
-            modelBuilder.Entity<FourthLayer>()
-                .ToTable("fourth_layers")
-                .HasOne(p => p.ThirdLayer)
-                .WithMany(b => b.FourthLayers)
-                .HasForeignKey(s => s.ThirdLayerId)
+            modelBuilder.Entity<SecondLayerB>()
+                .ToTable("second_layers_b")
+                .HasOne(p => p.FirstLayer)
+                .WithMany(b => b.SecondLayersB)
+                .HasForeignKey(s => s.FirstLayerId)
+                .HasPrincipalKey(c => c.Id);
+
+            modelBuilder.Entity<ThirdLayerB>()
+                .ToTable("third_layers_b")
+                .HasOne(p => p.SecondLayerB)
+                .WithMany(b => b.ThirdLayers)
+                .HasForeignKey(s => s.SecondLayerBId)
                 .HasPrincipalKey(c => c.Id);
         }
     }

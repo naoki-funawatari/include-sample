@@ -2,10 +2,10 @@
 
 namespace include_sample.Models
 {
-    public class SecondLayer : LayerBase
+    public class SecondLayerA : LayerBase
     {
         public int FirstLayerId { get; set; }
         public FirstLayer FirstLayer { get; set; }
-        public List<ThirdLayer> ThirdLayers { get; set; }
+        public List<ThirdLayerA> ThirdLayers { get; set; }
     }
 }
