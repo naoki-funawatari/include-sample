@@ -106,7 +106,7 @@ namespace include_sample.Controllers
         {
             // 1層目登録
             var firstLayers = Enumerable.Range(1, 1000)
-                .Select(_ => new FirstLayer())
+                .Select(_ => new Blog())
                 .ToList();
             await context.FirstLayers.AddRangeAsync(firstLayers);
             await context.SaveChangesAsync();
@@ -116,7 +116,7 @@ namespace include_sample.Controllers
             firstLayers.ForEach(async firstLayer =>
             {
                 firstLayer.SecondLayersA = Enumerable.Range(1, 11)
-                    .Select(_ => new SecondLayerA())
+                    .Select(_ => new Post())
                     .ToList();
 
                 await context.SecondLayersA.AddRangeAsync(firstLayer.SecondLayersA);
@@ -128,7 +128,7 @@ namespace include_sample.Controllers
             secondLayersA.ForEach(async secondLayer =>
             {
                 secondLayer.ThirdLayers = Enumerable.Range(1, 2)
-                    .Select(_ => new ThirdLayerA())
+                    .Select(_ => new Image())
                     .ToList();
 
                 await context.ThirdLayersA.AddRangeAsync(secondLayer.ThirdLayers);
@@ -140,7 +140,7 @@ namespace include_sample.Controllers
             firstLayers.ForEach(async firstLayer =>
             {
                 firstLayer.SecondLayersB = Enumerable.Range(1, 12)
-                    .Select(_ => new SecondLayerB())
+                    .Select(_ => new Reader())
                     .ToList();
 
                 await context.SecondLayersB.AddRangeAsync(firstLayer.SecondLayersB);
@@ -152,7 +152,7 @@ namespace include_sample.Controllers
             secondLayersB.ForEach(async secondLayer =>
             {
                 secondLayer.ThirdLayers = Enumerable.Range(1, 2)
-                    .Select(_ => new ThirdLayerB())
+                    .Select(_ => new Comment())
                     .ToList();
 
                 await context.ThirdLayersB.AddRangeAsync(secondLayer.ThirdLayers);
