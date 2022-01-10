@@ -7,36 +7,40 @@ namespace JuniorTennis.Infrastructure.DataBase
     {
         public SampleDbContext(DbContextOptions<SampleDbContext> options) : base(options) { }
 
-        public DbSet<FirstLayer> FirstLayers { get; set; }
-        public DbSet<SecondLayer> SecondLayers { get; set; }
-        public DbSet<ThirdLayer> ThirdLayers { get; set; }
-        public DbSet<FourthLayer> FourthLayers { get; set; }
+        public DbSet<Blog> Blogs { get; set; }
+        public DbSet<User> Users { get; set; }
+        public DbSet<Post> Posts { get; set; }
+        public DbSet<Image> Images { get; set; }
+        public DbSet<Comment> Comments { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            modelBuilder.Entity<FirstLayer>()
-                .ToTable("first_layers");
+            modelBuilder.Entity<Blog>()
+                .ToTable("blogs");
 
-            modelBuilder.Entity<SecondLayer>()
-                .ToTable("second_layers")
-                .HasOne(p => p.FirstLayer)
-                .WithMany(b => b.SecondLayers)
-                .HasForeignKey(s => s.FirstLayerId)
-                .HasPrincipalKey(c => c.Id);
+            modelBuilder.Entity<User>()
+                .ToTable("users")
+                .HasOne(p => p.Blog)
+                .WithMany(b => b.Users)
+                .HasForeignKey(s => s.BlogId);
 
-            modelBuilder.Entity<ThirdLayer>()
-                .ToTable("third_layers")
-                .HasOne(p => p.SecondLayer)
-                .WithMany(b => b.ThirdLayers)
-                .HasForeignKey(s => s.SecondLayerId)
-                .HasPrincipalKey(c => c.Id);
+            modelBuilder.Entity<Post>()
+                .ToTable("posts")
+                .HasOne(p => p.Blog)
+                .WithMany(b => b.Posts)
+                .HasForeignKey(s => s.BlogId);
 
-            modelBuilder.Entity<FourthLayer>()
-                .ToTable("fourth_layers")
-                .HasOne(p => p.ThirdLayer)
-                .WithMany(b => b.FourthLayers)
-                .HasForeignKey(s => s.ThirdLayerId)
-                .HasPrincipalKey(c => c.Id);
+            modelBuilder.Entity<Image>()
+                .ToTable("images")
+                .HasOne(p => p.Post)
+                .WithMany(b => b.Images)
+                .HasForeignKey(s => s.PostId);
+
+            modelBuilder.Entity<Comment>()
+                .ToTable("comments")
+                .HasOne(p => p.Post)
+                .WithMany(b => b.Comments)
+                .HasForeignKey(s => s.PostId);
         }
     }
 }

@@ -14,14 +14,14 @@ namespace include_sample.Controllers
     public class HomeController : Controller
     {
         private readonly ILogger<HomeController> _logger;
-        private readonly SampleDbContext _context;
+        private readonly SampleDbContext context;
 
         public HomeController(
             ILogger<HomeController> logger,
             SampleDbContext context)
         {
             _logger = logger;
-            _context = context;
+            this.context = context;
         }
 
         public IActionResult Index()
@@ -29,19 +29,69 @@ namespace include_sample.Controllers
             return View();
         }
 
-        public async Task<IActionResult> Privacy()
+        public async Task<IActionResult> Measure1()
         {
-            var model = new PrivacyViewModel();
+            var model = new Measure1ViewModel();
             model.StartDateTime = DateTime.Now;
 
-            _context.Database.SetCommandTimeout(120);
-            await _context.FirstLayers
-                .Include(o => o.SecondLayers)
+            context.Database.SetCommandTimeout(120);
+            var firstLayers = await context.FirstLayers
+                .Include(o => o.SecondLayersA)
                 .ThenInclude(o => o.ThirdLayers)
-                .ThenInclude(o => o.FourthLayers)
+                .Include(o => o.SecondLayersB)
+                .ThenInclude(o => o.ThirdLayers)
                 .ToListAsync();
 
             model.EndDateTime = DateTime.Now;
+            model.FirstLayerCount = firstLayers.Count();
+
+            var secondLayersA = firstLayers.SelectMany(o => o.SecondLayersA).ToList();
+            var thirdLayersA = secondLayersA.SelectMany(o => o.ThirdLayers).ToList();
+            model.SecondLayerACount = secondLayersA.Count();
+            model.ThirdLayerACount = thirdLayersA.Count();
+
+            var secondLayersB = firstLayers.SelectMany(o => o.SecondLayersB).ToList();
+            var thirdLayersB = secondLayersB.SelectMany(o => o.ThirdLayers).ToList();
+            model.SecondLayerBCount = secondLayersB.Count();
+            model.ThirdLayerBCount = thirdLayersB.Count();
+
+            return View(model);
+        }
+
+        public async Task<IActionResult> Measure2()
+        {
+            var model = new Measure2ViewModel();
+            model.StartDateTime = DateTime.Now;
+
+            context.Database.SetCommandTimeout(120);
+            var firstLayers = await context.FirstLayers.ToListAsync();
+            var firstLayerIds = firstLayers.Select(o => o.Id).ToList();
+
+            var secondLayersA = await context.SecondLayersA
+                .Where(o => firstLayerIds.Any(p => p == o.FirstLayerId))
+                .ToListAsync();
+            var secondLayerAIds = secondLayersA.Select(o => o.Id).ToList();
+
+            var thirdLayersA = await context.ThirdLayersA
+                .Where(o => secondLayerAIds.Any(p => p == o.SecondLayerAId))
+                .ToListAsync();
+
+            var secondLayersB = await context.SecondLayersB
+                .Where(o => firstLayerIds.Any(p => p == o.FirstLayerId))
+                .ToListAsync();
+            var secondLayerBIds = secondLayersB.Select(o => o.Id).ToList();
+
+            var thirdLayersB = await context.ThirdLayersB
+                .Where(o => secondLayerBIds.Any(p => p == o.SecondLayerBId))
+                .ToListAsync();
+
+            model.EndDateTime = DateTime.Now;
+            model.FirstLayerCount = firstLayers.Count();
+            model.SecondLayerACount = secondLayersA.Count();
+            model.ThirdLayerACount = thirdLayersA.Count();
+            model.SecondLayerBCount = secondLayersB.Count();
+            model.ThirdLayerBCount = thirdLayersB.Count();
+
             return View(model);
         }
 
@@ -55,47 +105,59 @@ namespace include_sample.Controllers
         public async Task<IActionResult> CreateInitialData()
         {
             // 1層目登録
-            var firstLayers = Enumerable.Range(1, 10000)
-                .Select(_ => new FirstLayer())
+            var firstLayers = Enumerable.Range(1, 1000)
+                .Select(_ => new Blog())
                 .ToList();
-            await _context.FirstLayers.AddRangeAsync(firstLayers);
-            await _context.SaveChangesAsync();
+            await context.FirstLayers.AddRangeAsync(firstLayers);
+            await context.SaveChangesAsync();
 
-            // 2層目登録
-            firstLayers = await _context.FirstLayers.ToListAsync();
+            // 2層目 - A 登録
+            firstLayers = await context.FirstLayers.ToListAsync();
             firstLayers.ForEach(async firstLayer =>
             {
-                firstLayer.SecondLayers = Enumerable.Range(1, 10)
-                    .Select(_ => new SecondLayer())
+                firstLayer.SecondLayersA = Enumerable.Range(1, 11)
+                    .Select(_ => new Post())
                     .ToList();
 
-                await _context.SecondLayers.AddRangeAsync(firstLayer.SecondLayers);
+                await context.SecondLayersA.AddRangeAsync(firstLayer.SecondLayersA);
             });
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
 
-            // 3層目登録
-            var secondLayers = await _context.SecondLayers.ToListAsync();
-            secondLayers.ForEach(async secondLayer =>
+            // 3層目 - A 登録
+            var secondLayersA = await context.SecondLayersA.ToListAsync();
+            secondLayersA.ForEach(async secondLayer =>
             {
-                secondLayer.ThirdLayers = Enumerable.Range(1, 10)
-                .Select(_ => new ThirdLayer())
-                .ToList();
-
-                await _context.ThirdLayers.AddRangeAsync(secondLayer.ThirdLayers);
-            });
-            await _context.SaveChangesAsync();
-
-            // 4層目登録
-            var thirdLayers = await _context.ThirdLayers.ToListAsync();
-            thirdLayers.ForEach(async thirdLayer =>
-            {
-                thirdLayer.FourthLayers = Enumerable.Range(1, 10)
-                    .Select(_ => new FourthLayer())
+                secondLayer.ThirdLayers = Enumerable.Range(1, 2)
+                    .Select(_ => new Image())
                     .ToList();
 
-                await _context.FourthLayers.AddRangeAsync(thirdLayer.FourthLayers);
+                await context.ThirdLayersA.AddRangeAsync(secondLayer.ThirdLayers);
             });
-            await _context.SaveChangesAsync();
+            await context.SaveChangesAsync();
+
+            // 2層目 - B 登録
+            firstLayers = await context.FirstLayers.ToListAsync();
+            firstLayers.ForEach(async firstLayer =>
+            {
+                firstLayer.SecondLayersB = Enumerable.Range(1, 12)
+                    .Select(_ => new Reader())
+                    .ToList();
+
+                await context.SecondLayersB.AddRangeAsync(firstLayer.SecondLayersB);
+            });
+            await context.SaveChangesAsync();
+
+            // 3層目 - B 登録
+            var secondLayersB = await context.SecondLayersB.ToListAsync();
+            secondLayersB.ForEach(async secondLayer =>
+            {
+                secondLayer.ThirdLayers = Enumerable.Range(1, 2)
+                    .Select(_ => new Comment())
+                    .ToList();
+
+                await context.ThirdLayersB.AddRangeAsync(secondLayer.ThirdLayers);
+            });
+            await context.SaveChangesAsync();
 
             return RedirectToAction(nameof(Index));
         }

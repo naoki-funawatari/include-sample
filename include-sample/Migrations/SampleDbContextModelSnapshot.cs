@@ -30,24 +30,7 @@ namespace include_sample.Migrations
                     b.ToTable("first_layers");
                 });
 
-            modelBuilder.Entity("include_sample.Models.FourthLayer", b =>
-                {
-                    b.Property<int>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("integer")
-                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
-
-                    b.Property<int>("ThirdLayerId")
-                        .HasColumnType("integer");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("ThirdLayerId");
-
-                    b.ToTable("fourth_layers");
-                });
-
-            modelBuilder.Entity("include_sample.Models.SecondLayer", b =>
+            modelBuilder.Entity("include_sample.Models.SecondLayerA", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
@@ -61,41 +44,64 @@ namespace include_sample.Migrations
 
                     b.HasIndex("FirstLayerId");
 
-                    b.ToTable("second_layers");
+                    b.ToTable("second_layers_a");
                 });
 
-            modelBuilder.Entity("include_sample.Models.ThirdLayer", b =>
+            modelBuilder.Entity("include_sample.Models.SecondLayerB", b =>
                 {
                     b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("integer")
                         .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Property<int>("SecondLayerId")
+                    b.Property<int>("FirstLayerId")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
 
-                    b.HasIndex("SecondLayerId");
+                    b.HasIndex("FirstLayerId");
 
-                    b.ToTable("third_layers");
+                    b.ToTable("second_layers_b");
                 });
 
-            modelBuilder.Entity("include_sample.Models.FourthLayer", b =>
+            modelBuilder.Entity("include_sample.Models.ThirdLayerA", b =>
                 {
-                    b.HasOne("include_sample.Models.ThirdLayer", "ThirdLayer")
-                        .WithMany("FourthLayers")
-                        .HasForeignKey("ThirdLayerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
 
-                    b.Navigation("ThirdLayer");
+                    b.Property<int>("SecondLayerAId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SecondLayerAId");
+
+                    b.ToTable("third_layers_a");
                 });
 
-            modelBuilder.Entity("include_sample.Models.SecondLayer", b =>
+            modelBuilder.Entity("include_sample.Models.ThirdLayerB", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("integer")
+                        .HasAnnotation("Npgsql:ValueGenerationStrategy", NpgsqlValueGenerationStrategy.IdentityByDefaultColumn);
+
+                    b.Property<int>("SecondLayerBId")
+                        .HasColumnType("integer");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("SecondLayerBId");
+
+                    b.ToTable("third_layers_b");
+                });
+
+            modelBuilder.Entity("include_sample.Models.SecondLayerA", b =>
                 {
                     b.HasOne("include_sample.Models.FirstLayer", "FirstLayer")
-                        .WithMany("SecondLayers")
+                        .WithMany("SecondLayersA")
                         .HasForeignKey("FirstLayerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -103,30 +109,54 @@ namespace include_sample.Migrations
                     b.Navigation("FirstLayer");
                 });
 
-            modelBuilder.Entity("include_sample.Models.ThirdLayer", b =>
+            modelBuilder.Entity("include_sample.Models.SecondLayerB", b =>
                 {
-                    b.HasOne("include_sample.Models.SecondLayer", "SecondLayer")
-                        .WithMany("ThirdLayers")
-                        .HasForeignKey("SecondLayerId")
+                    b.HasOne("include_sample.Models.FirstLayer", "FirstLayer")
+                        .WithMany("SecondLayersB")
+                        .HasForeignKey("FirstLayerId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
-                    b.Navigation("SecondLayer");
+                    b.Navigation("FirstLayer");
+                });
+
+            modelBuilder.Entity("include_sample.Models.ThirdLayerA", b =>
+                {
+                    b.HasOne("include_sample.Models.SecondLayerA", "SecondLayerA")
+                        .WithMany("ThirdLayers")
+                        .HasForeignKey("SecondLayerAId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SecondLayerA");
+                });
+
+            modelBuilder.Entity("include_sample.Models.ThirdLayerB", b =>
+                {
+                    b.HasOne("include_sample.Models.SecondLayerB", "SecondLayerB")
+                        .WithMany("ThirdLayers")
+                        .HasForeignKey("SecondLayerBId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("SecondLayerB");
                 });
 
             modelBuilder.Entity("include_sample.Models.FirstLayer", b =>
                 {
-                    b.Navigation("SecondLayers");
+                    b.Navigation("SecondLayersA");
+
+                    b.Navigation("SecondLayersB");
                 });
 
-            modelBuilder.Entity("include_sample.Models.SecondLayer", b =>
+            modelBuilder.Entity("include_sample.Models.SecondLayerA", b =>
                 {
                     b.Navigation("ThirdLayers");
                 });
 
-            modelBuilder.Entity("include_sample.Models.ThirdLayer", b =>
+            modelBuilder.Entity("include_sample.Models.SecondLayerB", b =>
                 {
-                    b.Navigation("FourthLayers");
+                    b.Navigation("ThirdLayers");
                 });
 #pragma warning restore 612, 618
         }
